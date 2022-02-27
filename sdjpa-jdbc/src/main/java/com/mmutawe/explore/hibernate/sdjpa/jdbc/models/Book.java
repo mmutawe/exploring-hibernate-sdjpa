@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 @Entity
 @Getter
@@ -21,12 +22,14 @@ public class Book {
     private String isbn;
     private String publisher;
     private String title;
-    private Long authorId;
+//    private Long authorId;
+    @Transient
+    private Author author;
 
-    public Book(String isbn, String publisher, String title, Long authorId) {
+    public Book(String isbn, String publisher, String title, Author author) {
         this.isbn = isbn;
         this.publisher = publisher;
         this.title = title;
-        this.authorId = authorId;
+        this.author = author;
     }
 }

@@ -1,6 +1,7 @@
 package com.mmutawe.explore.hibernate.sdjpa.jdbc.integrationtests;
 
 import com.mmutawe.explore.hibernate.sdjpa.jdbc.dao.BookDAO;
+import com.mmutawe.explore.hibernate.sdjpa.jdbc.models.Author;
 import com.mmutawe.explore.hibernate.sdjpa.jdbc.models.Book;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class BookDaoTest {
 
     @Test
     void testSaveOneBook(){
-        Book book = new Book("123-1234567895", "Meepo2 W33haa", "GG,WP in 20 min", 2L);
+        Book book = new Book("123-1234567895", "Meepo2 W33haa", "GG,WP in 20 min", null);
 
         Book resultBook = bookDao.saveOneBook(book);
 
@@ -45,10 +46,12 @@ public class BookDaoTest {
     @Test
     void testUpdateBook(){
 
-        Book book1 = new Book("123-1234567896", "Meepo2 W33haa", "GG,WP in 20 min, 2nd Edition", 2L);
+        Author author1 = new Author();
+        author1.setId(1L);
+        Book book1 = new Book("123-1234567896", "Meepo2 W33haa", "GG,WP in 20 min, 2nd Edition", author1);
         Book savedBook = bookDao.saveOneBook(book1);
 
-        Book book2 = new Book("123-1234567896", "Meepo1 W33haa", "GG,WP in 20 min, 2nd Edition", 2L);
+        Book book2 = new Book("123-1234567896", "Meepo1 W33haa", "GG,WP in 20 min, 2nd Edition", author1);
         book2.setId(savedBook.getId());
 
         Book updatedBook = bookDao.updateBook(book2);
@@ -61,7 +64,7 @@ public class BookDaoTest {
     @Test
     void testDeleteBook(){
 
-        Book book = new Book("123-1234567897", "Meepo3 W33haa", "Tower deleted, 4th Edition", 2L);
+        Book book = new Book("123-1234567897", "Meepo3 W33haa", "Tower deleted, 4th Edition", null);
         Book savedBook = bookDao.saveOneBook(book);
 
         Long bookId = savedBook.getId();
