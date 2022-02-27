@@ -10,9 +10,11 @@ import java.sql.*;
 public class BookDAOImpl implements BookDAO {
 
     private final DataSource dataSource;
+    private final AuthorDao authorDao;
 
-    public BookDAOImpl(DataSource dataSource) {
+    public BookDAOImpl(DataSource dataSource, AuthorDao authorDao) {
         this.dataSource = dataSource;
+        this.authorDao = authorDao;
     }
 
     @Override
@@ -84,7 +86,13 @@ public class BookDAOImpl implements BookDAO {
             preparedStatement.setString(1, book.getIsbn());
             preparedStatement.setString(2, book.getPublisher());
             preparedStatement.setString(3, book.getTitle());
-            preparedStatement.setLong(4, book.getAuthorId());
+
+            if (book.getAuthor() != null) {
+                preparedStatement.setLong(4, book.getAuthor().getId());
+            } else {
+                // The corresponding code for the underlying type of BIGINT, which is a database column is -5
+                preparedStatement.setNull(4, -5);
+            }
 
             preparedStatement.execute();
 
@@ -120,7 +128,10 @@ public class BookDAOImpl implements BookDAO {
             preparedStatement.setString(1, book.getIsbn());
             preparedStatement.setString(2, book.getPublisher());
             preparedStatement.setString(3, book.getTitle());
-            preparedStatement.setLong(4, book.getAuthorId());
+
+            if(book.getAuthor() !=null) {
+                preparedStatement.setLong(4, book.getAuthor().getId());
+            }
             preparedStatement.setLong(5, book.getId());
 
             preparedStatement.execute();
@@ -166,7 +177,9 @@ public class BookDAOImpl implements BookDAO {
             resultBook.setIsbn(resultSet.getString("isbn"));
             resultBook.setTitle(resultSet.getString("title"));
             resultBook.setPublisher(resultSet.getString("publisher"));
-            resultBook.setAuthorId(resultSet.getLong("author_id"));
+            resultBook.setAuthor(
+                    authorDao.getAuthorById(resultSet.getLong("author_id"))
+            );
 
             return resultBook;
 
