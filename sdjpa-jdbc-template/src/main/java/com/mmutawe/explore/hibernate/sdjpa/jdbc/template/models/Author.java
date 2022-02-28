@@ -5,10 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,6 +20,9 @@ public class Author {
 
     private String firstName;
     private String lastName;
+
+    @Transient
+    private List<Book> books;
 
     public Author(String firstName, String lastName) {
         this.firstName = firstName;
