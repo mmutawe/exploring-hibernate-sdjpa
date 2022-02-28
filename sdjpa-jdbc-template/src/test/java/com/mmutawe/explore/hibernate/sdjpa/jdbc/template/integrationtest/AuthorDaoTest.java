@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("local")
 @DataJpaTest
@@ -29,7 +31,7 @@ public class AuthorDaoTest {
 
     @Test
     void testGetAuthorByFullName(){
-        Author resultAuthor = authorDao.getAuthorByFullName("Kuriboh","YuGiOh");
+        Author resultAuthor = authorDao.getAuthorByFullName("Kuriboh_1","YuGiOh_1");
 
         assertThat(resultAuthor).isNotNull();
     }
@@ -46,10 +48,10 @@ public class AuthorDaoTest {
     @Test
     void testUpdateAuthor(){
 
-        Author author1 = new Author("Kuriboh_1","YuGiOh_1");
+        Author author1 = new Author("Kuriboh_11","YuGiOh_11");
         Author savedAuthor = authorDao.saveOneAuthor(author1);
 
-        Author author2 = new Author("Kuriboh_2","YuGiOh_2");
+        Author author2 = new Author("Kuriboh_22","YuGiOh_22");
         author2.setId(savedAuthor.getId());
 
         Author updatedAuthor = authorDao.updateAuthor(author2);
@@ -71,9 +73,10 @@ public class AuthorDaoTest {
         Long authorId = savedAuthor.getId();
 
         authorDao.deleteAuthor(authorId);
-        Author resultAuthor = authorDao.getAuthorById(authorId);
+//        Author resultAuthor = authorDao.getAuthorById(authorId);
+//        assertThat(resultAuthor).isNull();
 
-        assertThat(resultAuthor).isNull();
+        assertThrows(EmptyResultDataAccessException.class, () -> authorDao.getAuthorById(authorId));
     }
 
 }
