@@ -12,6 +12,7 @@
         <module>sdjpa-jdbc</module>
         <module>sdjpa-jdbc-template</module>
         <module>sdjpa-hibernate-dao</module>
+        <module>sdjpa-spring-data-jpa</module>
     </modules>
 
     <properties>
