@@ -9,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ActiveProfiles("local")
@@ -27,8 +29,34 @@ public class AuthorDaoTest {
     }
 
     @Test
+    void testGetAuthorsByLastNameLike(){
+        List<Author> resultAuthors = authorDao.getAuthorsByLastNameLike("Dendi");
+
+        assertThat(resultAuthors).isNotNull();
+
+        resultAuthors = authorDao.getAuthorsByLastNameLike("end");
+
+        assertThat(resultAuthors).isNotNull();
+    }
+
+    @Test
     void testGetAuthorByFullName(){
         Author resultAuthor = authorDao.getAuthorByFullName("abc","abcd");
+
+        assertThat(resultAuthor).isNotNull();
+    }
+
+    @Test
+    void testGetAllAuthors(){
+        List<Author> resultAuthors = authorDao.getAllAuthors();
+
+        assertThat(resultAuthors).isNotNull();
+        assertThat(resultAuthors.size()).isGreaterThan(0);
+    }
+
+    @Test
+    void testGetAuthorByFullNameCriteria(){
+        Author resultAuthor = authorDao.getAuthorByFullNameCriteria("abc","abcd");
 
         assertThat(resultAuthor).isNotNull();
     }

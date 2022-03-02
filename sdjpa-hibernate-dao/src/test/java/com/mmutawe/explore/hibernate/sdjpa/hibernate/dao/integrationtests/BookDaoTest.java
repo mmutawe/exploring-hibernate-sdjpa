@@ -10,6 +10,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ActiveProfiles("local")
@@ -32,6 +34,28 @@ public class BookDaoTest {
         Book resultBook = bookDao.getBookByTitle("Guide to Pro Dota2, 2th Edition");
 
         assertThat(resultBook).isNotNull();
+    }
+
+    @Test
+    void testGetBookByTitleNative(){
+        Book resultBook = bookDao.getBookByTitleNative("Guide to Pro Dota2, 2th Edition");
+
+        assertThat(resultBook).isNotNull();
+    }
+
+    @Test
+    void testGetBookByIsbn(){
+        Book resultBook = bookDao.getBookByIsbn("123-1234567890");
+
+        assertThat(resultBook).isNotNull();
+    }
+
+    @Test
+    void testGetAllBooks(){
+        List<Book> resultBooks = bookDao.getAllBooks();
+
+        assertThat(resultBooks).isNotNull();
+        assertThat(resultBooks.size()).isGreaterThan(0);
     }
 
     @Test
