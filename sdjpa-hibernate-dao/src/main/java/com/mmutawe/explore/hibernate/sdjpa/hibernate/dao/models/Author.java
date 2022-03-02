@@ -4,15 +4,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@NamedQueries({
+        // no need for the SELECT statement
+        //@NamedQuery(name = "author_retrieve_all", query = "SELECT a FROM Author a")
+        @NamedQuery(name = "author_retrieve_all",
+                query = "FROM Author"),
+        @NamedQuery(name = "author_retrieve_by_full_name",
+                query = "FROM Author a WHERE a.firstName= :first_name AND a.lastName= :last_name")
+})
 public class Author {
 
     @Id

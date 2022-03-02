@@ -12,6 +12,13 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
+@NamedQueries({
+        @NamedQuery(name = "book_retrieve_all",
+                query = "SELECT b FROM Book b"),
+        @NamedQuery(name = "book_retrieve_by_title",
+                query = "SELECT b FROM Book b WHERE b.title= :title")
+
+})
 public class Book {
 
     @Id

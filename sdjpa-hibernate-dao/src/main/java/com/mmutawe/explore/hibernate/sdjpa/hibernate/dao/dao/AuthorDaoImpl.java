@@ -5,10 +5,13 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
+import java.util.List;
 
 @Component
-public class AuthorDaoImpl implements AuthorDao{
+public class AuthorDaoImpl implements AuthorDao {
 
     private final EntityManagerFactory entityManagerFactory;
 
@@ -28,14 +31,81 @@ public class AuthorDaoImpl implements AuthorDao{
     public Author getAuthorByFullName(String firstName, String lastName) {
 
         EntityManager entityManager = getEntityManager();
+//        TypedQuery<Author> typedQuery = entityManager
+//                .createQuery("SELECT a FROM Author a " +
+//                        "WHERE a.firstName = :first_name and a.lastName= :last_name", Author.class);
         TypedQuery<Author> typedQuery = entityManager
-                .createQuery("SELECT a FROM Author a " +
-                        "WHERE a.firstName = :first_name and a.lastName= :last_name", Author.class);
+                .createNamedQuery("author_retrieve_by_full_name", Author.class);
         typedQuery.setParameter("first_name", firstName);
         typedQuery.setParameter("last_name", lastName);
         Author resAuthor = typedQuery.getSingleResult();
         entityManager.close();
         return resAuthor;
+    }
+
+    @Override
+    public Author getAuthorByFullNameCriteria(String firstName, String lastName) {
+
+        EntityManager entityManager = getEntityManager();
+
+        try {
+
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Author> criteriaQuery = criteriaBuilder.createQuery(Author.class);
+
+            Root<Author> root = criteriaQuery.from(Author.class);
+
+            ParameterExpression<String> firstNameParam = criteriaBuilder.parameter(String.class);
+            ParameterExpression<String> lastNameParam = criteriaBuilder.parameter(String.class);
+
+            Predicate firstNamePredicate = criteriaBuilder.equal(root.get("firstName"), firstNameParam);
+            Predicate lastNamePredicate = criteriaBuilder.equal(root.get("lastName"), lastNameParam);
+
+            criteriaQuery.select(root).where(criteriaBuilder.and(firstNamePredicate, lastNamePredicate));
+
+            TypedQuery<Author> typedQuery = entityManager.createQuery(criteriaQuery);
+            typedQuery.setParameter(firstNameParam, firstName);
+            typedQuery.setParameter(lastNameParam, lastName);
+
+            return typedQuery.getSingleResult();
+
+        } finally {
+            entityManager.close();
+        }
+    }
+
+        @Override
+    public List<Author> getAllAuthors() {
+
+        EntityManager entityManager = getEntityManager();
+        try {
+
+            TypedQuery<Author> typedQuery = entityManager
+                    .createNamedQuery("author_retrieve_all", Author.class);
+
+            return typedQuery.getResultList();
+
+        } finally {
+            entityManager.close();
+        }
+    }
+
+    @Override
+    public List<Author> getAuthorsByLastNameLike(String lastName) {
+
+        EntityManager entityManager = getEntityManager();
+
+        try {
+            Query query = entityManager
+                    .createQuery("SELECT a FROM Author a WHERE a.lastName LIKE :last_name");
+            query.setParameter("last_name", "%" + lastName + "%");
+            List<Author> authors = query.getResultList();
+
+            return authors;
+
+        } finally {
+            entityManager.close();
+        }
     }
 
     @Override
@@ -62,7 +132,7 @@ public class AuthorDaoImpl implements AuthorDao{
         entityManager.merge(author); // merge by itself, will make the update in the hibernate context but not the db
         entityManager.flush();
         entityManager.getTransaction().commit();
-        Author resAuthor = entityManager.find( Author.class ,author.getId());
+        Author resAuthor = entityManager.find(Author.class, author.getId());
 
         entityManager.close();
         return resAuthor;
@@ -80,7 +150,7 @@ public class AuthorDaoImpl implements AuthorDao{
         entityManager.close();
     }
 
-    private EntityManager getEntityManager(){
+    private EntityManager getEntityManager() {
         return entityManagerFactory.createEntityManager();
     }
 }
