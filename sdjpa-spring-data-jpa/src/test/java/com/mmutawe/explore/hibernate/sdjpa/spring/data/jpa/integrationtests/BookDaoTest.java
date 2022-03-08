@@ -1,6 +1,7 @@
 package com.mmutawe.explore.hibernate.sdjpa.spring.data.jpa.integrationtests;
 
 import com.mmutawe.explore.hibernate.sdjpa.spring.data.jpa.dao.BookDao;
+import com.mmutawe.explore.hibernate.sdjpa.spring.data.jpa.dao.SortType;
 import com.mmutawe.explore.hibernate.sdjpa.spring.data.jpa.models.Book;
 import com.mmutawe.explore.hibernate.sdjpa.spring.data.jpa.repositories.BookRepository;
 import lombok.SneakyThrows;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -17,6 +19,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import static com.mmutawe.explore.hibernate.sdjpa.spring.data.jpa.dao.SortType.ASC;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -96,6 +99,38 @@ public class BookDaoTest {
     void TestFindBookByTitleWithNativeQuery(){
         Book book = bookRepository.findBookByTitleWithNativeQuery("How to win Ti, 1st Edition");
         assertThat(book).isNotNull();
+    }
+
+    @Test
+    void TestGetAllBooks(){
+        List<Book> books = bookDao.getAllBooks();
+
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isGreaterThan(1);
+    }
+
+    @Test
+    void TestGetAllBooksWithPageable(){
+        List<Book> books = bookDao.getAllBooks(PageRequest.of(1,3));
+
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isEqualTo(3);
+    }
+
+    @Test
+    void TestGetAllBooksWithPageAndOffset(){
+        List<Book> books = bookDao.getAllBooks(3,3);
+
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isGreaterThan(1);
+    }
+
+    @Test
+    void TestGetAllBooksSortedByTitle(){
+        List<Book> books = bookDao.getAllBooksSortedByTitle(1,5, ASC);
+
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isEqualTo(5);
     }
 
     @Test
